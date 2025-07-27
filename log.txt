@@ -1,0 +1,80 @@
+[2025-07-26 23:06:04.352] Client 699565: ACCESS_REQUEST - Request #1
+[2025-07-26 23:06:04.629] Client 699565: ACCESS_GRANTED - Request #1
+[2025-07-26 23:06:08.036] Client 699565: DONE - Request #1 - Work completed in 3.33s
+[2025-07-26 23:06:10.648] Client 699565: ACCESS_REQUEST - Request #2
+[2025-07-26 23:06:10.943] Client 699565: ACCESS_GRANTED - Request #2
+[2025-07-26 23:06:14.150] Client 699565: DONE - Request #2 - Work completed in 3.14s
+[2025-07-26 23:06:16.440] Client 699565: ACCESS_REQUEST - Request #3
+[2025-07-26 23:06:16.657] Client 699565: ACCESS_GRANTED - Request #3
+[2025-07-26 23:06:21.265] Client 699565: DONE - Request #3 - Work completed in 4.59s
+[2025-07-26 23:06:23.278] Client 699565: ACCESS_REQUEST - Request #4
+[2025-07-26 23:06:23.575] Client 699565: ACCESS_GRANTED - Request #4
+[2025-07-26 23:06:27.584] Client 699565: DONE - Request #4 - Work completed in 3.91s
+[2025-07-26 23:06:28.845] Client 699565: ACCESS_REQUEST - Request #5
+[2025-07-26 23:06:29.088] Client 699565: ACCESS_GRANTED - Request #5
+[2025-07-26 23:06:33.196] Client 699565: DONE - Request #5 - Work completed in 4.03s
+[2025-07-26 23:06:36.075] Client 699565: ACCESS_REQUEST - Request #6
+[2025-07-26 23:06:36.303] Client 699565: ACCESS_GRANTED - Request #6
+[2025-07-26 23:06:36.699] Client 700253: ACCESS_REQUEST - Request #1
+[2025-07-26 23:06:40.813] Client 699565: DONE - Request #6 - Work completed in 4.50s
+[2025-07-26 23:06:41.014] Client 700253: ACCESS_GRANTED - Request #1
+[2025-07-26 23:06:42.308] Client 699565: ACCESS_REQUEST - Request #7
+[2025-07-26 23:06:46.626] Client 700253: DONE - Request #1 - Work completed in 5.51s
+[2025-07-26 23:06:46.827] Client 699565: ACCESS_GRANTED - Request #7
+[2025-07-26 23:06:48.519] Client 700253: ACCESS_REQUEST - Request #2
+[2025-07-26 23:06:51.837] Client 699565: DONE - Request #7 - Work completed in 4.91s
+[2025-07-26 23:06:52.038] Client 700253: ACCESS_GRANTED - Request #2
+[2025-07-26 23:06:53.790] Client 699565: ACCESS_REQUEST - Request #8
+[2025-07-26 23:06:57.750] Client 700253: DONE - Request #2 - Work completed in 5.64s
+[2025-07-26 23:06:57.951] Client 699565: ACCESS_GRANTED - Request #8
+[2025-07-26 23:07:00.551] Client 700253: ACCESS_REQUEST - Request #3
+[2025-07-26 23:07:03.061] Client 699565: DONE - Request #8 - Work completed in 5.02s
+[2025-07-26 23:07:03.262] Client 700253: ACCESS_GRANTED - Request #3
+[2025-07-26 23:07:04.860] Client 699565: ACCESS_REQUEST - Request #9
+[2025-07-26 23:07:07.272] Client 700253: DONE - Request #3 - Work completed in 4.00s
+[2025-07-26 23:07:07.473] Client 699565: ACCESS_GRANTED - Request #9
+[2025-07-26 23:07:08.505] Client 700253: ACCESS_REQUEST - Request #4
+[2025-07-26 23:07:13.483] Client 699565: DONE - Request #9 - Work completed in 5.99s
+[2025-07-26 23:07:13.684] Client 700253: ACCESS_GRANTED - Request #4
+[2025-07-26 23:07:14.910] Client 699565: ACCESS_REQUEST - Request #10
+[2025-07-26 23:07:18.594] Client 700253: DONE - Request #4 - Work completed in 4.89s
+[2025-07-26 23:07:18.795] Client 699565: ACCESS_GRANTED - Request #10
+[2025-07-26 23:07:20.321] Client 700253: ACCESS_REQUEST - Request #5
+[2025-07-26 23:07:22.001] Client 699565: DONE - Request #10 - Work completed in 3.16s
+[2025-07-26 23:07:22.202] Client 700253: ACCESS_GRANTED - Request #5
+[2025-07-26 23:07:24.327] Client 699565: ACCESS_REQUEST - Request #11
+[2025-07-26 23:07:26.511] Client 700253: DONE - Request #5 - Work completed in 4.21s
+[2025-07-26 23:07:26.712] Client 699565: ACCESS_GRANTED - Request #11
+[2025-07-26 23:07:28.298] Client 700253: ACCESS_REQUEST - Request #6
+[2025-07-26 23:07:30.820] Client 699565: DONE - Request #11 - Work completed in 4.08s
+[2025-07-26 23:07:31.021] Client 700253: ACCESS_GRANTED - Request #6
+[2025-07-26 23:07:33.738] Client 699565: ACCESS_REQUEST - Request #12
+[2025-07-26 23:07:35.529] Client 700253: DONE - Request #6 - Work completed in 4.42s
+[2025-07-26 23:07:35.730] Client 699565: ACCESS_GRANTED - Request #12
+[2025-07-26 23:07:36.815] Client 700253: INTERRUPTED - Client interrupted by user
+[2025-07-26 23:07:41.141] Client 699565: DONE - Request #12 - Work completed in 5.33s
+[2025-07-26 23:07:43.034] Client 699565: ACCESS_REQUEST - Request #13
+[2025-07-26 23:07:43.246] Client 699565: ACCESS_GRANTED - Request #13
+[2025-07-26 23:07:49.257] Client 699565: DONE - Request #13 - Work completed in 5.97s
+[2025-07-26 23:07:51.765] Client 699565: ACCESS_REQUEST - Request #14
+[2025-07-26 23:07:51.766] Client 699565: ERROR - Request #14 - No response received
+[2025-07-26 23:07:51.766] Client 699565: COMPLETED - Finished all requests
+[2025-07-26 23:09:20.374] Client 703509: ACCESS_REQUEST - Request #1
+[2025-07-26 23:09:20.588] Client 703509: ACCESS_GRANTED - Request #1
+[2025-07-26 23:09:25.998] Client 703509: DONE - Request #1 - Work completed in 5.39s
+[2025-07-26 23:09:28.836] Client 703509: ACCESS_REQUEST - Request #2
+[2025-07-26 23:09:29.106] Client 703509: ACCESS_GRANTED - Request #2
+[2025-07-26 23:09:33.014] Client 703509: DONE - Request #2 - Work completed in 3.82s
+[2025-07-26 23:09:35.662] Client 703509: ACCESS_REQUEST - Request #3
+[2025-07-26 23:09:35.920] Client 703509: ACCESS_GRANTED - Request #3
+[2025-07-26 23:09:36.037] Client 703823: ACCESS_REQUEST - Request #1
+[2025-07-26 23:09:41.134] Client 703509: DONE - Request #3 - Work completed in 5.13s
+[2025-07-26 23:09:41.335] Client 703823: ACCESS_GRANTED - Request #1
+[2025-07-26 23:09:43.419] Client 703509: ACCESS_REQUEST - Request #4
+[2025-07-26 23:09:44.643] Client 703823: DONE - Request #1 - Work completed in 3.22s
+[2025-07-26 23:09:44.844] Client 703509: ACCESS_GRANTED - Request #4
+[2025-07-26 23:09:47.531] Client 703823: ACCESS_REQUEST - Request #2
+[2025-07-26 23:09:48.451] Client 703509: DONE - Request #4 - Work completed in 3.55s
+[2025-07-26 23:09:48.653] Client 703823: ACCESS_GRANTED - Request #2
+[2025-07-26 23:09:49.871] Client 703823: INTERRUPTED - Client interrupted by user
+[2025-07-26 23:09:50.934] Client 703509: ACCESS_REQUEST - Request #5

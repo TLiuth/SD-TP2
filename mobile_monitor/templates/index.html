@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Client Monitor</title>
+    <link rel="manifest" href="/static/manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status-info {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+        
+        .client-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .client-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 5px solid #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .client-card.waiting {
+            border-left-color: #4CAF50;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .client-card.critical {
+            border-left-color: #FF5722;
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            animation: pulse 2s infinite;
+            transform: scale(1.02);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 32px rgba(255, 87, 34, 0.2); }
+            50% { box-shadow: 0 12px 40px rgba(255, 87, 34, 0.4); }
+        }
+        
+        .client-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .client-status {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+        
+        .waiting .status-dot {
+            background-color: #4CAF50;
+        }
+        
+        .critical .status-dot {
+            background-color: #FF5722;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0.3; }
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+        
+        .connected {
+            background-color: #4CAF50;
+        }
+        
+        .disconnected {
+            background-color: #f44336;
+            animation: shake 0.5s infinite;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+        
+        .client-id {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .client-card {
+                padding: 15px;
+            }
+            
+            .client-name {
+                font-size: 16px;
+            }
+        }
+        
+        /* PWA specific styles */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            z-index: 1001;
+        }
+        
+        .install-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="connection-status connected" id="connectionStatus">🟢 Connected</div>
+    
+    <div class="header">
+        <h1>🔄 Client Monitor</h1>
+        <div class="status-info" id="lastUpdate">Connecting...</div>
+        <div class="status-info" id="activeClients">0 active clients</div>
+    </div>
+    
+    <div class="client-grid" id="clientGrid"></div>
+    
+    <div class="install-prompt" id="installPrompt">
+        📱 Install this app on your phone for better experience!
+        <button class="install-btn" onclick="installApp()">Install</button>
+        <button class="install-btn" onclick="hideInstallPrompt()" style="background: #666;">Later</button>
+    </div>
+
+    <script>
+        let deferredPrompt;
+        let lastUpdate = Date.now();
+        let isConnected = true;
+        
+        // PWA Install functionality
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installPrompt').style.display = 'block';
+        });
+        
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    deferredPrompt = null;
+                    hideInstallPrompt();
+                });
+            }
+        }
+        
+        function hideInstallPrompt() {
+            document.getElementById('installPrompt').style.display = 'none';
+        }
+        
+        function updateConnectionStatus(connected) {
+            const statusEl = document.getElementById('connectionStatus');
+            if (connected !== isConnected) {
+                isConnected = connected;
+                if (connected) {
+                    statusEl.textContent = '🟢 Connected';
+                    statusEl.className = 'connection-status connected';
+                } else {
+                    statusEl.textContent = '🔴 Disconnected';
+                    statusEl.className = 'connection-status disconnected';
+                }
+            }
+        }
+        
+        function updateStatus() {
+            fetch('/api/status')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network error');
+                    return response.json();
+                })
+                .then(data => {
+                    updateConnectionStatus(true);
+                    const container = document.getElementById('clientGrid');
+                    container.innerHTML = '';
+                    
+                    let activeCount = 0;
+                    
+                    Object.entries(data).forEach(([clientKey, clientData]) => {
+                        const { active, client_id } = clientData;
+                        if (active) activeCount++;
+                        
+                        const card = document.createElement('div');
+                        card.className = `client-card ${active ? 'critical' : 'waiting'}`;
+                        
+                        card.innerHTML = `
+                            <div class="client-name">
+                                <span>${clientKey.toUpperCase()}</span>
+                                <span class="status-dot"></span>
+                            </div>
+                            <div class="client-status">
+                                <span>${active ? '🔥 IN CRITICAL SECTION' : '⏳ WAITING FOR ACCESS'}</span>
+                            </div>
+                            <div class="client-id">PID: ${client_id || 'Not assigned'}</div>
+                        `;
+                        
+                        container.appendChild(card);
+                    });
+                    
+                    lastUpdate = Date.now();
+                    document.getElementById('lastUpdate').textContent = 
+                        `Last update: ${new Date().toLocaleTimeString()}`;
+                    document.getElementById('activeClients').textContent = 
+                        `${activeCount} clients in critical section`;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    updateConnectionStatus(false);
+                    document.getElementById('lastUpdate').textContent = 
+                        `Connection error: ${error.message}`;
+                });
+        }
+        
+        // Update every 300ms for smooth experience
+        setInterval(updateStatus, 300);
+        updateStatus();
+        
+        // Connection health check
+        setInterval(() => {
+            if (Date.now() - lastUpdate > 3000) {
+                updateConnectionStatus(false);
+            }
+        }, 1000);
+        
+        // Prevent zoom on double tap (mobile)
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+    </script>
+</body>
+</html>
