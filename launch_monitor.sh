@@ -1,0 +1,4 @@
+#!/bin/bash
+    python3 mobile_monitor/app.py -d
+    
+    
