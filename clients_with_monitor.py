@@ -7,11 +7,11 @@ import datetime
 import sys
 
 # --- Configuration for the Client ---
-SERVER_HOST = "localhost"
+SERVER_HOST = os.environ.get('SERVER_HOST', 'localhost')
 SERVER_PORT = int(os.environ.get('SERVER_PORT', 5000))
-MONITOR_HOST = "localhost"
+MONITOR_HOST = "host.docker.internal"
 MONITOR_PORT = 6000
-CLIENT_ID = os.getpid()
+client_id = os.getenv("CLIENT_ID", "0")
 
 def log_event(event_type, client_id, message=""):
     """Log events to log.txt file."""
@@ -35,7 +35,7 @@ def send_monitor_update(status):
         monitor_socket.connect((MONITOR_HOST, MONITOR_PORT))
         
         message = json.dumps({
-            "client_id": CLIENT_ID,
+            "client_id": client_id,
             "status": status,
             "timestamp": time.time()
         })
@@ -106,7 +106,7 @@ class PersistentClient:
             print("Client: Connection closed.")
 
 if __name__ == "__main__":
-    print(f"--- Starting Client Application (PID: {CLIENT_ID}) ---")
+    print(f"--- Starting Client Application (PID: {client_id}) ---")
     
     # Test monitor connection first
     print("🔍 Testing monitor connection...")
@@ -125,8 +125,8 @@ if __name__ == "__main__":
         for request_number in range(1, 15):  # Reduced to 5 for testing
             print(f"\n=== Request {request_number}/5 ===")
             
-            json_message = {"command": "REQUEST_ACCESS", "client_id": f"{CLIENT_ID}"}
-            log_event("ACCESS_REQUEST", CLIENT_ID, f"Request #{request_number}")
+            json_message = {"command": "REQUEST_ACCESS", "client_id": f"{client_id}"}
+            log_event("ACCESS_REQUEST", client_id, f"Request #{request_number}")
             
             response = client.send_message_and_wait_response(json.dumps(json_message))
             
@@ -134,9 +134,9 @@ if __name__ == "__main__":
                 try:
                     response_data = json.loads(response)
                     if response_data.get("status") == "GRANTED":
-                        log_event("ACCESS_GRANTED", CLIENT_ID, f"Request #{request_number}")
+                        log_event("ACCESS_GRANTED", client_id, f"Request #{request_number}")
                         
-                        print(f"🎉 Client {CLIENT_ID}: Access granted for request {request_number}!")
+                        print(f"🎉 Client {client_id}: Access granted for request {request_number}!")
                         
                         # Notify monitor: entering critical section
                         send_monitor_update("ENTERING_CRITICAL")
@@ -145,44 +145,44 @@ if __name__ == "__main__":
                         print(f"⚡ Working in critical section for {work_time:.1f}s...")
                         time.sleep(work_time)
                         
-                        print(f"✅ Client {CLIENT_ID}: Work completed!")
+                        print(f"✅ Client {client_id}: Work completed!")
                         
                         # Notify monitor: leaving critical section
                         send_monitor_update("LEAVING_CRITICAL")
                         
-                        json_message = {"command": "DONE", "client_id": f"{CLIENT_ID}"}
+                        json_message = {"command": "DONE", "client_id": f"{client_id}"}
                         done_response = client.send_message_and_wait_response(json.dumps(json_message))
                         
-                        log_event("DONE", CLIENT_ID, f"Request #{request_number} - Work completed in {work_time:.2f}s")
+                        log_event("DONE", client_id, f"Request #{request_number} - Work completed in {work_time:.2f}s")
                         
                         time.sleep(random.uniform(1, 3))  # Pause between requests
                         
                     elif response_data.get("status") == "WAIT":
-                        log_event("ACCESS_DENIED", CLIENT_ID, f"Request #{request_number}")
-                        print(f"⏳ Client {CLIENT_ID}: Access denied, need to wait.")
+                        log_event("ACCESS_DENIED", client_id, f"Request #{request_number}")
+                        print(f"⏳ Client {client_id}: Access denied, need to wait.")
                         break
                     else:
-                        log_event("UNEXPECTED_RESPONSE", CLIENT_ID, f"Request #{request_number} - Response: {response}")
+                        log_event("UNEXPECTED_RESPONSE", client_id, f"Request #{request_number} - Response: {response}")
                         print(f"❓ Unexpected response: {response}")
                         break
                         
                 except json.JSONDecodeError:
-                    log_event("ERROR", CLIENT_ID, f"Request #{request_number} - Invalid JSON response: {response}")
+                    log_event("ERROR", client_id, f"Request #{request_number} - Invalid JSON response: {response}")
                     print(f"❌ Invalid JSON response: {response}")
                     break
             else:
-                log_event("ERROR", CLIENT_ID, f"Request #{request_number} - No response received")
+                log_event("ERROR", client_id, f"Request #{request_number} - No response received")
                 print(f"❌ No response received")
                 break
         
-        print(f"\n🏁 Client {CLIENT_ID}: Completed all requests.")
-        log_event("COMPLETED", CLIENT_ID, "Finished all requests")
+        print(f"\n🏁 Client {client_id}: Completed all requests.")
+        log_event("COMPLETED", client_id, "Finished all requests")
             
     except KeyboardInterrupt:
-        log_event("INTERRUPTED", CLIENT_ID, "Client interrupted by user")
-        print(f"\n⏹️ Client {CLIENT_ID}: Interrupted by user.")
+        log_event("INTERRUPTED", client_id, "Client interrupted by user")
+        print(f"\n⏹️ Client {client_id}: Interrupted by user.")
     finally:
         # Notify monitor that client is done
         send_monitor_update("CLIENT_FINISHED")
         client.disconnect()
-        print(f"--- Client {CLIENT_ID} application finished. ---")
+        print(f"--- Client {client_id} application finished. ---")

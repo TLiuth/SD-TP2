@@ -58,13 +58,14 @@ def start_monitoring_server():
                     status = message.get('status', '')
                     
                     # Map client ID to one of our 5 rectangles
-                    rect_index = (hash(str(client_id)) % 5)
-                    rect_key = f"client_{rect_index + 1}"
-                    
-                    client_status[rect_key]['active'] = (status == 'ENTERING_CRITICAL')
-                    client_status[rect_key]['last_update'] = time.time()
-                    client_status[rect_key]['client_id'] = str(client_id)
-                    
+                    rect_key = f"client_{client_id}"
+                    if rect_key in client_status:
+                        client_status[rect_key]['active'] = (status == 'ENTERING_CRITICAL')
+                        client_status[rect_key]['last_update'] = time.time()
+                        client_status[rect_key]['client_id'] = str(client_id)
+                    else:
+                        print(f"⚠️ client_id {client_id} não esperado")
+                                        
                     print(f"📊 Updated {rect_key} (PID: {client_id}): {status}")
                     
                 except json.JSONDecodeError:
