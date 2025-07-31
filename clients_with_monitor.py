@@ -7,10 +7,14 @@ import datetime
 import sys
 
 # --- Configuration for the Client ---
+# - Host Configuration -
 SERVER_HOST = os.environ.get('SERVER_HOST', 'localhost')
 SERVER_PORT = int(os.environ.get('SERVER_PORT', 5000))
+
+# - Monitor Configuration
 MONITOR_HOST = os.environ.get('MONITOR_HOST', 'localhost')
 MONITOR_PORT = 6000
+# Client Identification
 client_id = os.getenv("CLIENT_ID", "0")
 
 def log_event(event_type, client_id, message=""):
@@ -49,6 +53,7 @@ def send_monitor_update(status):
         print(f"❌ Failed to send monitor update: {e}")
         return False
 
+# Defines the Client object and it's functions
 class PersistentClient:
     def __init__(self, host, port):
         self.host = host
@@ -122,14 +127,15 @@ if __name__ == "__main__":
         exit(1)
     
     try:
-        for request_number in range(1, 15):  # Reduced to 5 for testing
-            print(f"\n=== Request {request_number}/5 ===")
+        for request_number in range(1, 50):  # The client accesses the resource 50 times
+            print(f"\n=== Request {request_number}/50 ===")
             
             json_message = {"command": "REQUEST_ACCESS", "client_id": f"{client_id}"}
             log_event("ACCESS_REQUEST", client_id, f"Request #{request_number}")
             
             response = client.send_message_and_wait_response(json.dumps(json_message))
-            
+
+            # proccess the response for the access request
             if response:
                 try:
                     response_data = json.loads(response)
@@ -141,7 +147,7 @@ if __name__ == "__main__":
                         # Notify monitor: entering critical section
                         send_monitor_update("ENTERING_CRITICAL")
                         
-                        work_time = random.uniform(3, 6)  # Longer time for visibility
+                        work_time = random.uniform(0.2, 2)  # Longer time for visibility
                         print(f"⚡ Working in critical section for {work_time:.1f}s...")
                         time.sleep(work_time)
                         
