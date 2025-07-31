@@ -4,10 +4,11 @@ import threading
 import json
 import time
 
-app = Flask(__name__)
+app = Flask(_name_)
 
 # Global state
 client_status = {f"client_{i+1}": {'active': False, 'last_update': 0, 'client_id': ''} for i in range(5)}
+client_id_to_slot = {}  # maps client_id to a fixed slot (client_1, client_2, ...)
 
 @app.route('/')
 def index():
@@ -56,18 +57,24 @@ def start_monitoring_server():
                     message = json.loads(data.decode('utf-8'))
                     client_id = message.get('client_id', '')
                     status = message.get('status', '')
-                    
-                    # Map client ID to one of our 5 rectangles
-                    rect_key = f"client_{client_id}"
-                    if rect_key in client_status:
+
+                    # Assign a fixed slot to this client_id if it's not already mapped
+                    if client_id not in client_id_to_slot:
+                        for i in range(5):
+                            key = f"client_{i+1}"
+                            if client_status[key]['client_id'] in ('', str(client_id)):
+                                client_id_to_slot[client_id] = key
+                                break
+
+                    if client_id in client_id_to_slot:
+                        rect_key = client_id_to_slot[client_id]
                         client_status[rect_key]['active'] = (status == 'ENTERING_CRITICAL')
                         client_status[rect_key]['last_update'] = time.time()
                         client_status[rect_key]['client_id'] = str(client_id)
+                        print(f"📊 Updated {rect_key} (PID: {client_id}): {status}")
                     else:
-                        print(f"⚠️ client_id {client_id} não esperado")
-                                        
-                    print(f"📊 Updated {rect_key} (PID: {client_id}): {status}")
-                    
+                        print(f"⚠️ No slot available for {client_id}")
+
                 except json.JSONDecodeError:
                     print(f"⚠️ Invalid JSON from {addr}")
                 except Exception as e:
@@ -82,11 +89,26 @@ def start_monitoring_server():
     server_thread.daemon = True
     server_thread.start()
 
-if __name__ == '__main__':
+def start_critical_conflict_logger():
+    def logger_thread():
+        while True:
+            time.sleep(0.1)
+            active_clients = [key for key in client_status if client_status[key]['active']]
+            if len(active_clients) > 1:
+                timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+                with open("critical_conflict.log", "a") as log_file:
+                    log_file.write(f"[{timestamp}] Conflict! Active clients: {active_clients}\n")
+    
+    thread = threading.Thread(target=logger_thread)
+    thread.daemon = True
+    thread.start()
+
+if _name_ == '_main_':
     print("🎯 Starting Mobile Monitor Server...")
     start_monitoring_server()
+    start_critical_conflict_logger()
     
-    # Get local IP
+    # Get local IP for display
     import subprocess
     try:
         result = subprocess.run(['hostname', '-I'], capture_output=True, text=True)
