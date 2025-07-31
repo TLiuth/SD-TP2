@@ -10,26 +10,28 @@ import sys
 from mqtt_client_connection import MqttClientConnection
 
 # --- Configuration ---
+# - Broker Connection Configs
 MQTT_BROKER_HOST = os.environ.get('MQTT_BROKER_HOST', 'localhost')
 MQTT_BROKER_PORT = 1883
-MQTT_USER = "your_mqtt_user" 
-MQTT_PASSWORD = "your_mqtt_password"
-MQTT_TOPIC = "BCC362"
+MQTT_USER = "your_mqtt_user" # no user defined for the broker in this simulation
+MQTT_PASSWORD = "your_mqtt_password" # no password defined for the broker in this simulation
+MQTT_TOPIC = "BCC362" # Mosquitto topic, used for both publish and subscribe
 
+# defines an ID for the application. Weak approach, should be changed on a formal application
 PROCESS_ID = os.getpid()
 MQTT_CLIENT_NAME = f"MyApplicationGateway_{PROCESS_ID}"
 
-NETWORK_LISTEN_HOST = "0.0.0.0"
-NETWORK_LISTEN_PORT = int(sys.argv[1])
 
-print(sys.argv[1])
+NETWORK_LISTEN_HOST = "0.0.0.0" # Listen for client on broadcast
+NETWORK_LISTEN_PORT = int(sys.argv[1]) # The client port is passed as an argument
 
 # --- Shared Queues ---
-incoming_network_messages_queue = queue.Queue()
-incoming_mqtt_messages_queue = queue.Queue()
-outgoing_mqtt_publish_queue = queue.Queue()
+incoming_network_messages_queue = queue.Queue() # queue of messages coming from the client (access request and release notification)
+incoming_mqtt_messages_queue = queue.Queue()    # queue of messages coming from the broker
+outgoing_mqtt_publish_queue = queue.Queue()     # queue of messages to be published on the broker
 
 # --- Global Client Connection Storage ---
+# In this simulation, only one client connects to the sync node
 client_connections = {}  # Store active client connections {client_id: connection}
 client_waiting_for_access = {}  # Track which clients are waiting {client_id: connection}
 
@@ -160,7 +162,7 @@ def application_logic_thread_func():
     while True:
         try:
             # --- Process Incoming Network Messages ---
-            if not incoming_network_messages_queue.empty():
+            if not incoming_network_messages_queue.empty(): # while the queue is not empty, gets and processes the next message
                 message = incoming_network_messages_queue.get()
                 print(f"Processing Network Message: {message['payload']}")
 
@@ -305,6 +307,7 @@ def announce_sync_presence():
 if __name__ == "__main__":
     print("Starting Main Application Gateway...")
 
+    # start and configure Broker object
     mqtt_connection_manager = MqttClientConnection(
         broker_ip=MQTT_BROKER_HOST,
         port=MQTT_BROKER_PORT,
