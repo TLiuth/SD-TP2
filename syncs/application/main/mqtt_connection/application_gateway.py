@@ -10,7 +10,7 @@ import sys
 from mqtt_client_connection import MqttClientConnection
 
 # --- Configuration ---
-MQTT_BROKER_HOST = "localhost"
+MQTT_BROKER_HOST = os.environ.get('MQTT_BROKER_HOST', 'localhost')
 MQTT_BROKER_PORT = 1883
 MQTT_USER = "your_mqtt_user" 
 MQTT_PASSWORD = "your_mqtt_password"

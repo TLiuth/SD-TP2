@@ -1,0 +1,13 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+COPY syncs/ /app/syncs
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY launch_application.sh /app/launch_application.sh
+RUN chmod +x /app/launch_application.sh
+
+CMD ["./launch_application.sh"]

@@ -9,7 +9,7 @@ import sys
 # --- Configuration for the Client ---
 SERVER_HOST = os.environ.get('SERVER_HOST', 'localhost')
 SERVER_PORT = int(os.environ.get('SERVER_PORT', 5000))
-MONITOR_HOST = "host.docker.internal"
+MONITOR_HOST = os.environ.get('MONITOR_HOST', 'localhost')
 MONITOR_PORT = 6000
 client_id = os.getenv("CLIENT_ID", "0")
 
